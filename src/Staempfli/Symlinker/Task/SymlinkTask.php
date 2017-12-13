@@ -5,6 +5,7 @@
  * Copyright © 2017 Staempfli AG. All rights reserved.
  * @author    juan.alonso@staempfli.com
  */
+
 namespace Staempfli\Symlinker\Task;
 
 use Staempfli\Symlinker\Helper\FileHelper;
@@ -45,6 +46,10 @@ class SymlinkTask
     /**
      * @var bool
      */
+    protected $createParentDirsEnabled = false;
+    /**
+     * @var bool
+     */
     protected $overwriteEnabled = false;
     /**
      * @var bool
@@ -73,7 +78,12 @@ class SymlinkTask
     {
         $this->wildcardsEnabled = true;
     }
-    
+
+    public function enableCreateParentDirs()
+    {
+        $this->createParentDirsEnabled = true;
+    }
+
     public function enableOverwrite()
     {
         $this->overwriteEnabled = true;
@@ -189,7 +199,12 @@ class SymlinkTask
         }
         $parentDirForLink = dirname($link);
         if (!is_dir($parentDirForLink)) {
-            throw new \Exception(sprintf('Destination Parent dir not existing: %s', $parentDirForLink));
+            if (!$this->createParentDirsEnabled) {
+                throw new \Exception(sprintf('Destination Parent dir not existing: %s', $parentDirForLink));
+            } else {
+                // Create missing parent directory.
+                mkdir($parentDirForLink, 0755, true);
+            }
         }
     }
 

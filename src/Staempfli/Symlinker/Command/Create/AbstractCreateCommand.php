@@ -21,6 +21,7 @@ abstract class AbstractCreateCommand extends Command
     const OPTION_FORCE = 'force';
     const OPTION_DRY_RUN = 'dry-run';
     const OPTION_ENABLE_WILDCARDS = 'enable-wildcards';
+    const OPTION_ENABLE_CREATE_PARENT_DIRS = 'enable-create-parent-dirs';
 
     /**
      * @var SymlinkTask
@@ -59,7 +60,11 @@ abstract class AbstractCreateCommand extends Command
             null,
             InputOption::VALUE_NONE,
             'Enable wildcards support for source target. "/*" symlinks all content in dir, "/**" symlinks recursively all files in dir and subDirs]'
-        );
+        )->addOption(
+            self::OPTION_ENABLE_CREATE_PARENT_DIRS,
+            null,
+            InputOption::VALUE_NONE,
+            'Enable on the fly recursive creation of missing destination parent directories.');
     }
 
     /**
@@ -89,6 +94,9 @@ abstract class AbstractCreateCommand extends Command
         }
         if ($input->getOption(self::OPTION_ENABLE_WILDCARDS)) {
             $this->symlinkTask->enableWildcards();
+        }
+        if ($input->getOption(self::OPTION_ENABLE_CREATE_PARENT_DIRS)) {
+            $this->symlinkTask->enableCreateParentDirs();
         }
     }
 }
